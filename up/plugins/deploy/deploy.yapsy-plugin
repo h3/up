@@ -1,0 +1,9 @@
+[Core]
+Name = Deploy
+Module = plugin
+
+[Documentation]
+Author = Maxime Haineault
+Version = 0.1
+Website = https://github.com/h3/up
+Description = Core deploy plugin

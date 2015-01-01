@@ -1,0 +1,17 @@
+conf:
+  - virtualenv:
+    - path: /var/www/vhosts/%(stage)s.%(domain)s/venv
+    - requirements: /var/www/vhosts/%(stage)s.%(domain)s/requirements.pip
+    - packages: ['virtualenv']
+
+events:
+  - virtualenv:
+    - on-deploy:
+      - run: |
+          mkdir -p %(conf-virtualenv-path)s
+          virtualenv %(conf-virtualenv-path)s
+          %(conf-virtualenv-path)s/bin/pip install -R %(conf-virtualenv-requirements)s
+    - on-deploy-done:
+      - run: chown -R %(conf-user)s:%(conf-group)s %(conf-virtualenv-path)s
+    - on-cleanup:
+      - run: rm -rf %(conf-virtualenv-path)s

@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+USAGE = """\
+usage: up [options]
+   or: up --help
+
+"""
+
+import sys, os, shutil, subprocess
+
+class OptObj: pass
+
+def runit():
+    print "down!"
+
+def main():
+    sys.exit(runit())
+
+if __name__=='__main__':
+    main()
