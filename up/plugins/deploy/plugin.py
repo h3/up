@@ -1,22 +1,22 @@
-from yapsy.IPlugin import IPlugin
-from up.events import Event
+import up.plugin as base
 
 
-class Deploy(IPlugin, Event):
+class Deploy(base.UpPlugin):
     """
     $ up deploy alpha
     """
     name = 'deploy'
     description = 'Deploys project on remote stage(s)'
 
-    def argparse(self, subparsers):
-        print "AAA"
-        p = subparsers.add_parser(self.name, help=self.description)
-        p.add_argument('stages') #, type=str, metavar='stages', help='Stage(s) to deploy to', choices=['a', 'b'])
-        print "BBB"
+    def init(self):
+        self.on(self.name, self.run)
 
-    def run(self):
-        self.trigger('deploy')
+    def argparse(self, subparsers):
+        # Adds the "deploy" command
+        p = subparsers.add_parser(self.name, help=self.description)
+        p.add_argument('stages', type=str, metavar='stages', help='Stage(s) to deploy to')
+
+    def run(self, context=None):
         self.trigger('deploy-done')
 
 

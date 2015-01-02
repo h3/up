@@ -5,33 +5,46 @@ import sys, os #, shutil, subprocess
 import argparse
 import up
 
+from up.events import EventMixin
+
 from yapsy.PluginManager import PluginManager
 
 __author__ = 'Maxime Haineault'
 
+import logging
+logging.basicConfig()
 parser = argparse.ArgumentParser(prog='up', description='Deploy shit up the Internet')
 parser.add_argument('-l', '--log-level', default=0, help='Log level', required=False)
 
 def run():
+
+    # Initialize plugins
     pm = PluginManager()
     pm.setPluginPlaces([
         os.path.join(os.path.dirname(up.__file__), 'plugins'),
     ])
-
     pm.collectPlugins()
-    subparsers = parser.add_subparsers(dest='command', help="test subparser")
 
-    # Activate all loaded plugins
+    # Activate all loaded plugins and build argument parser 
+    # dynamically from installed plugins
+    subparsers = parser.add_subparsers(dest='command', help="test subparser")
     for plugin in pm.getAllPlugins():
+        print "ACTIVATING %s" % plugin.name
         pm.activatePluginByName(plugin.name)
         obj = plugin.plugin_object
-        # Bind sub commands if needed
+        if plugin.name == 'virtualenv':
+            import IPython
+            IPython.embed()
+        # Load sub commands if needed
         if hasattr(obj, 'argparse'):
             obj.argparse(subparsers)
         if hasattr(obj, 'init'):
+            print "INIT %s" % plugin.name
             obj.init()
 
     args = parser.parse_args()
+    EventMixin().trigger(args.command, context=dict(args._get_kwargs()))
+
     return 0
 
 

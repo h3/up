@@ -1,26 +1,15 @@
+from yapsy.IPlugin import IPlugin
 from fabric.api import env, sudo, run
 
 from up import log
 from up.utils import import_class
 from up.conf import settings
-
-env.use_ssh_config = True
-
-CORE_PLUGINS = [
-    'up.contrib.deploy.plugin',
-    'up.contrib.virtualenv.plugin',
-    'up.contrib.uwsgi.plugin',
-    'up.contrib.nginx.plugin',
-]
+from up.events import EventMixin
+from up.remote import FabricMixin
 
 
-def load_plugins(subparsers):
-
-    for plugin in CORE_PLUGINS:
-        try:
-            hook = import_class('%s.Hook' % plugin)(subparsers)
-        except ImportError:
-            log.error('Could not load plugin: %s', plugin)
+class UpPlugin(IPlugin, EventMixin, FabricMixin):
+    pass
 
 
 class BaseHook(object):

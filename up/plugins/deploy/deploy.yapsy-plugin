@@ -1,5 +1,5 @@
 [Core]
-Name = Deploy
+Name = deploy
 Module = plugin
 
 [Documentation]

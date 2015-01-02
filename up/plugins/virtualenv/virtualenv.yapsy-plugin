@@ -1,5 +1,5 @@
 [Core]
-Name = Virtualenv
+Name = virtualenv
 Module = plugin
 
 [Documentation]

@@ -1,39 +1,17 @@
-from yapsy.IPlugin import IPlugin
-from up.events import Event
+import up.plugin as base
 
 
-class Virtualenv(IPlugin, Event):
-    name = 'test'
-    description = 'Virtualenv'
+class Virtualenv(base.UpPlugin):
+    name = 'virtualenv'
+    description = 'Generic virtualenv support'
 
-#   def argparse(self, subparsers):
-#       subparsers.add_parser(self.name, help=self.description)
-#          >>> parser_a.add_argument('bar', type=int, help='bar help')
+    def init(self):
+        self.on('deploy-done', self.run)
 
-    def set_name(self, name):
-        self.name = name
-
-    def print_name(self):
-        print "This is plugin 1: %s" % self.name
+    def run(self, context=None):
+        print "VIRTUALENV DEPLOY DONE !!"
 
 
-
-#from up.plugin import BaseHook
-##'virt'from up.utils import get_plugin_by_name
-#
-#def get_plugins_by_name(stage, plugin):
-#    return [
-#        plugin for plugin in stage.get('plugins')
-#        if plugin.get('name') == name
-#    ]
-#
-#def FL(cmd, *args, **kwargs):
-#    return {
-#        'command': cmd,
-#        'args': args,
-#        'kwargs': kwargs,
-#    }
-#
 #
 #class Hook(BaseHook):
 #    name = 'virtualenv'
