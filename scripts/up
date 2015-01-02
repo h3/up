@@ -29,17 +29,12 @@ def run():
     # dynamically from installed plugins
     subparsers = parser.add_subparsers(dest='command', help="test subparser")
     for plugin in pm.getAllPlugins():
-        print "ACTIVATING %s" % plugin.name
         pm.activatePluginByName(plugin.name)
         obj = plugin.plugin_object
-        if plugin.name == 'virtualenv':
-            import IPython
-            IPython.embed()
         # Load sub commands if needed
         if hasattr(obj, 'argparse'):
             obj.argparse(subparsers)
         if hasattr(obj, 'init'):
-            print "INIT %s" % plugin.name
             obj.init()
 
     args = parser.parse_args()
