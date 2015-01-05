@@ -21,8 +21,6 @@ class EventMixin(object):
         })
 
     def trigger(self, eventName, context=None):
-        print "TRIGGER: %s" % eventName
-        print self._state['callbacks']
         if eventName in self._state['callbacks']:
             for callback in self._state['callbacks'][eventName]:
                 ctx = {}
@@ -31,5 +29,3 @@ class EventMixin(object):
                 if context:
                     ctx.update(context)
                 callback['callback'](context)
-
-

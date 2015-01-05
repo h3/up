@@ -6,6 +6,7 @@ import argparse
 import up
 
 from up.events import EventMixin
+from up.conf import settings
 
 from yapsy.PluginManager import PluginManager
 
@@ -13,8 +14,20 @@ __author__ = 'Maxime Haineault'
 
 import logging
 logging.basicConfig()
+#logging.basicConfig(level=logging.DEBUG)
+#logging.getLogger('yapsy').setLevel(logging.DEBUG)
+
 parser = argparse.ArgumentParser(prog='up', description='Deploy shit up the Internet')
 parser.add_argument('-l', '--log-level', default=0, help='Log level', required=False)
+
+CORE_PLUGINS = ['deploy']
+
+def pluginIterator(pm):
+    for plugin in pm.getAllPlugins():
+        if settings.plugins == [] \
+            or plugin.name in settings.plugins \
+            or plugin.name in CORE_PLUGINS:
+            yield plugin
 
 def run():
 
@@ -28,17 +41,25 @@ def run():
     # Activate all loaded plugins and build argument parser 
     # dynamically from installed plugins
     subparsers = parser.add_subparsers(dest='command', help="test subparser")
-    for plugin in pm.getAllPlugins():
+    for plugin in pluginIterator(pm):
         pm.activatePluginByName(plugin.name)
         obj = plugin.plugin_object
+        # Load default plugin configs
+        if hasattr(obj, 'default_conf'):
+            settings.set_plugin_defaults(plugin.name, obj.default_conf)
         # Load sub commands if needed
         if hasattr(obj, 'argparse'):
             obj.argparse(subparsers)
-        if hasattr(obj, 'init'):
+        if hasattr(plugin.plugin_object, 'init'):
             obj.init()
 
     args = parser.parse_args()
-    EventMixin().trigger(args.command, context=dict(args._get_kwargs()))
+
+    # Init plugins and run command for all stages
+    for stage in settings.stages:
+        if stage != 'default':
+            settings.context['current']['stage'] = stage
+            EventMixin().trigger(args.command, context=dict(args._get_kwargs()))
 
     return 0
 

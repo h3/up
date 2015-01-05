@@ -1,4 +1,5 @@
 import up.plugin as base
+from up.conf import settings
 
 
 class Deploy(base.UpPlugin):
@@ -14,10 +15,14 @@ class Deploy(base.UpPlugin):
     def argparse(self, subparsers):
         # Adds the "deploy" command
         p = subparsers.add_parser(self.name, help=self.description)
-        p.add_argument('stages', type=str, metavar='stages', help='Stage(s) to deploy to')
+        p.add_argument('stages', type=str, metavar='stages',
+                      #choices=settings.stages,
+                       help='Stage(s) to deploy to')
 
     def run(self, context=None):
-        self.trigger('deploy-done')
+        if settings.get_stage() in context.get('stages').split(','):
+            self.remote('git clone on %s' % settings.context.get('current').get('stage'))
+            self.trigger('deploy-done')
 
 
 

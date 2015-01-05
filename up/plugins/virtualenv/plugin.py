@@ -1,59 +1,26 @@
 import up.plugin as base
+from up.conf import settings
 
 
 class Virtualenv(base.UpPlugin):
     name = 'virtualenv'
     description = 'Generic virtualenv support'
 
+    default_conf = {
+       'path': '/%(project.root)s/venv',
+       'requirements': '/%(project.root)s/requirements.pip',
+    }
+
     def init(self):
         self.on('deploy-done', self.run)
 
     def run(self, context=None):
-        print "VIRTUALENV DEPLOY DONE !!"
+        pass
 
 
 #
-#class Hook(BaseHook):
-#    name = 'virtualenv'
-#    command = 'virtualenv %s'
-#    commands = []
 #
-#    def __init__(self, subparsers):
-#        import sys
-#        print sys.argv
-#        print subparsers
 #
-#        for stagename in self.args.on:
-#            stage = settings.get_stage_by_name(stagename)
-#            env.host_string = stage.get('host')
-#            plugins = get_plugin_by_name(stage, self.name)
-#            print plugins
-#            for plugin in plugins:
-#                path = plugin.get('path', '')
-#
-#            settings.get('branch')
-#            stage.get('branch')
-#
-#        FL('version', {'help': 'show program\'s version number and exit'}),
-#        FL('h,help', {'help': 'show this help message and exit'}),
-#        FL('v,verbose'),
-#        FL('q,quiet'),
-#        FL('p,python', {
-#            'type': str,
-#            'metavar': 'PYTHON_EXE',
-#            'help': """The Python interpreter to use, e.g.,
-#--python=python2.5 will use the python2.5 interpreter
-#to create the new environment.  The default is the
-#interpreter that virtualenv was installed with (/usr/bin/python)"""}),
-#        FL('clear'),
-#        FL('no-site-packages'),
-#        FL('unzip-setuptools'),
-#        FL('relocatable'),
-#        FL('distribute'),
-#        FL('extra-search-dir'),
-#        FL('never-download'),
-#        FL('prompt')
-#    ]
 #def setup_virtualenv():
 #    """
 #    Setup virtualenv
