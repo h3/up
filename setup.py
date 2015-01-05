@@ -8,6 +8,7 @@ except ImportError:
 install_requires = [
     'PyYAML',
     'Yapsy',
+    'Jinja2',
 ]
 
 setup(name='up',

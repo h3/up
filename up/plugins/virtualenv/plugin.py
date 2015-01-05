@@ -7,8 +7,14 @@ class Virtualenv(base.UpPlugin):
     description = 'Generic virtualenv support'
 
     default_conf = {
-       'path': '/%(project.root)s/venv',
-       'requirements': '/%(project.root)s/requirements.pip',
+        'system-site-packages': False,
+        'always-copy': False,
+        'unzip-setuptools': False,
+        'no-setuptools': False,
+        'no-pip': False,
+        'extra-search-dir': None,
+        'dst-path': '//{{ current.stage }}/venv',
+        'requirements': '/{{ project.root }}/requirements.pip',
     }
 
     def init(self):

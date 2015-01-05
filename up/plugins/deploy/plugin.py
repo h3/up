@@ -20,35 +20,10 @@ class Deploy(base.UpPlugin):
                        help='Stage(s) to deploy to')
 
     def run(self, context=None):
-        if settings.get_stage() in context.get('stages').split(','):
-            self.remote('git clone on %s' % settings.context.get('current').get('stage'))
+        stage = settings.get_stage()
+        if stage in context.get('stages').split(','):
+            context = settings.get_context()
+            stage_context = context.get('stages').get(stage)
+            project_root = stage_context.get('project_root')
+            self.remote('git clone on %s' % project_root)
             self.trigger('deploy-done')
-
-
-
-#from fabric.api import *
-#
-#from up import log
-#from up.conf import settings
-#from up.plugin import BaseHook
-#
-#
-#class Hook(BaseHook):
-#    name = 'deploy'
-#
-#    def __init__(self, subparsers):
-#        super(Hook, self).__init__(subparsers)
-#
-#        self.parser.add_argument('--syncdb', action='store_true')
-#        self.parser.set_defaults(func=self._deploy)
-#
-#    def _deploy(self, args):
-#        log.info("Executing %s on %s" % (
-#            self.name,
-#            ', '.join(args.on),
-#        ))
-#
-#        for stagename in args.on:
-#            stage = settings.get_stage_by_name(stagename)
-#            env.host_string = stage.get('host')
-#            run("uptime")

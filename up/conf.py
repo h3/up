@@ -3,6 +3,8 @@ import re
 import yaml
 import subprocess
 
+from jinja2 import Template
+
 
 def run(*args, **kwargs):
     return subprocess.check_output(args, **kwargs).replace('\n', '')
@@ -37,21 +39,25 @@ class Settings(object):
         self.context['current']['hostname'] = run('hostname')
         self.context['current']['user'] = run('whoami')
 
+    def get_context(self):
         for k,v in self.yaml.get('project').iteritems():
             self.context['project'][k] = v
 
+        for k,v in self.yaml.get('plugins').iteritems():
+            self.context['plugins'][k] = self.interpolate(v)
+
         for k,v in self.yaml.get('stages').iteritems():
-            self.context['stages'][k] = self.interpolate(v)
+            ctx = {}
+            if v.get('extends'):
+                ctx.update(v.get('extends'))
+            ctx.update(v)
+            self.context['stages'][k] = self.interpolate(ctx)
+        return self.context
 
     def interpolate_string(self, s):
-        pattern = re.compile(r'.*%\(([A-Za-z0-9-_.]+)\)(\w{1}).*')
-        rs = pattern.match(s)
-        if rs:
-            path, flag = rs.groups()
-            _str = '%(' + path + ')' + flag
-            return s.replace(_str, self.get(path, cast=flag) or '')
-        else:
-            return s
+        tpl = Template(s)
+        tpl.globals['pathjoin'] = os.path.join
+        return tpl.render(self.context)
 
     def interpolate(self, obj):
         """
@@ -86,10 +92,9 @@ class Settings(object):
         except AttributeError:
             return None
 
-    def get(self, key, cast='s'):
+    def get(self, key):
         if '.' not in key:
-            _str = '%' + cast
-            return _str % self.context[key]
+            return self.context[key]
         else:
             keys = key.split('.')
             obj = self.context[keys[0]]
