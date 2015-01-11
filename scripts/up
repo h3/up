@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 
 import sys, os #, shutil, subprocess
@@ -6,7 +7,7 @@ import argparse
 import up
 
 from up.events import EventMixin
-from up.conf import settings
+from up.conf import Settings
 
 from yapsy.PluginManager import PluginManager
 
@@ -20,6 +21,9 @@ logging.basicConfig()
 parser = argparse.ArgumentParser(prog='up', description='Deploy shit up the Internet')
 parser.add_argument('-l', '--log-level', default=0, help='Log level', required=False)
 
+settings = Settings()
+
+LOADED_PLUGINS = {}
 CORE_PLUGINS = ['deploy']
 
 def pluginIterator(pm):
@@ -34,8 +38,10 @@ def run():
     # Initialize plugins
     pm = PluginManager()
     pm.setPluginPlaces([
-        os.path.join(os.path.dirname(up.__file__), 'plugins'),
-    ])
+        # Collect core plugins
+        os.path.join(os.path.dirname(up.__file__), 'plugins/'),
+        # Collect project relative plugins
+        os.path.join(os.getcwd(), 'up/plugins/')])
     pm.collectPlugins()
 
     # Activate all loaded plugins and build argument parser 
@@ -50,16 +56,21 @@ def run():
         # Load sub commands if needed
         if hasattr(obj, 'argparse'):
             obj.argparse(subparsers)
-        # Init plugin
-        if hasattr(plugin.plugin_object, 'init'):
-            obj.init()
+        LOADED_PLUGINS[plugin.name] = {'plugin': plugin, 'object': obj}
+
+    plugins = CORE_PLUGINS + settings.plugins
+    for plugin in plugins:
+        if plugin in LOADED_PLUGINS:
+            obj = LOADED_PLUGINS[plugin].get('object')
+            if hasattr(obj, 'init'):
+                obj.init()
 
     args = parser.parse_args()
 
     # Init plugins and run command for all stages
     for stage in settings.stages:
         if stage != 'default':
-            settings.context['current']['stage'] = stage
+            settings.set_stage(stage)
             EventMixin().trigger(args.command, context=dict(args._get_kwargs()))
     return 0
 

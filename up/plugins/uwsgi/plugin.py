@@ -1,10 +1,20 @@
-from up.plugin import BaseHook
+import up.plugin as base
+from up.conf import Settings
+
+settings = Settings()
 
 
-class Hook(BaseHook):
+class Uwsgi(base.UpPlugin):
+    """
+    """
     name = 'uwsgi'
-    command = 'service uwsgi %s'
-    automap_args = True
-    config_template = ['%(stage)s.uwsgi', 'default.uwsgi']
-    commands = ['start', 'stop', 'status', 'restart',
-                'reload', 'force-reload']
+    description = 'Setup uwsgi on remote stage(s)'
+    default_conf = {
+        'processes': 2,
+        'up-templates': [
+            ['{{ current.stage }}.{{ project.domain }}.ini', '/etc/uwsgi/app-enabled'],
+        ]
+    }
+
+    def init(self):
+        self.on('deploy-init', self.copy_templates)

@@ -1,11 +1,12 @@
 import up.plugin as base
-from up.conf import settings
+from up.conf import Settings
+
+settings = Settings()
 
 
 class Virtualenv(base.UpPlugin):
     name = 'virtualenv'
     description = 'Generic virtualenv support'
-
     default_conf = {
         'system-site-packages': False,
         'always-copy': False,
