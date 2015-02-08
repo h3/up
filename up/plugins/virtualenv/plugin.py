@@ -19,10 +19,10 @@ class Virtualenv(base.UpPlugin):
     }
 
     def init(self):
-        self.on('deploy-done', self.run)
+        self.on('deploy-done', self.setup)
 
-    def run(self, context=None):
-        pass
+    def setup(self, context=None):
+        self.run('virtualenv venv')
 
 
 #

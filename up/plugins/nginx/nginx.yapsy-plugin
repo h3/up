@@ -1,9 +1,9 @@
 [Core]
-Name = uwsgi
+Name = nginx 
 Module = plugin
 
 [Documentation]
 Author = Maxime Haineault
 Version = 0.1
 Website = https://github.com/h3/up
-Description = uWSGI plugin
+Description = nginx plugin

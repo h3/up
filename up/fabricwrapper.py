@@ -1,14 +1,16 @@
-from fabric.api import env, sudo, run
-from fabric.operations import put
+from fabric.api import env,  get, local, open_shell, prompt, put, sudo, run
 from up.conf import Settings
 
 settings = Settings()
 env.use_ssh_config = True
 
 cmds = {
+    'get': get,
+    'open_shell': open_shell,
+    'prompt': prompt,
+    'put': put,
     'run': run,
     'sudo': sudo,
-    'put': put,
 }
 
 
@@ -22,8 +24,20 @@ class FabricMixin(object):
             for host in ctx.get('servers'):
                 print "[%s] %s: %s (%s)" % (host, cmd, args, kwargs)
                 env.host_string = host
-                rs.append(cmds.get(cmd)(*args, **kwargs))
+               #rs.append(cmds.get(cmd)(*args, **kwargs))
         return rs
+
+    def get(self, *args, **kwargs):
+        return local(*args, **kwargs)
+
+    def local(self, *args, **kwargs):
+        return self.cmd('get', *args, **kwargs)
+
+    def open_shell(self, *args, **kwargs):
+        return self.cmd('open_shell', *args, **kwargs)
+
+    def prompt(self, *args, **kwargs):
+        return self.cmd('prompt', *args, **kwargs)
 
     def put(self, *args, **kwargs):
         return self.cmd('put', *args, **kwargs)

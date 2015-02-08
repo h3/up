@@ -18,3 +18,10 @@ class Uwsgi(base.UpPlugin):
 
     def init(self):
         self.on('deploy-init', self.copy_templates)
+        self.on('deploy-done', self.reload)
+
+    def reload(self, context=None):
+        self.sudo('service uwsgi reload')
+
+    def restart(self, context=None):
+        self.sudo('service uwsgi restart')
