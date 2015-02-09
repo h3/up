@@ -13,7 +13,7 @@ class Django(base.UpPlugin):
         'settings': 'local_settings.py',
         'up-templates': [
             ['{{ current.stage }}_settings.py',
-             '/var/www/vhosts/{{ current.stage }}.{{ project.domain }}/{{ django.settings }}'],
+             '/var/www/vhosts/{{ current.stage }}.{{ project.domain }}/local_settings.py'],
         ]
     }
 

@@ -68,10 +68,13 @@ def run():
     args = parser.parse_args()
 
     # Init plugins and run command for all stages
+    kwargs = dict(args._get_kwargs())
+    stages = kwargs.get('stages').split(',')
     for stage in settings.stages:
-        if stage != 'default':
-            settings.set_stage(stage)
-            EventMixin().trigger(args.command, context=dict(args._get_kwargs()))
+        stage = stage.strip()
+        if stage != 'default' and stage in stages:
+            settings.set_stage(stage.strip())
+            EventMixin().trigger(args.command, context=kwargs)
     return 0
 
 

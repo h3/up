@@ -29,6 +29,10 @@ class UpPlugin(IPlugin, EventMixin, FabricMixin):
         return rs
 
     def copy_template(self, src, dst, context={}):
-        with open (os.path.join(os.getcwd(), 'up/templates/', self.name, src), 'r') as fd:
-            tpl = template(fd.read(), context, stringio=True)
-            return self.put(local_path=tpl, remote_path=dst, use_glob=False)
+        tpl = os.path.join(os.getcwd(), 'up/templates/', self.name, src)
+        try:
+            with open (tpl, 'r') as fd:
+                tpl = template(fd.read(), context, stringio=True)
+                return self.put(local_path=tpl, remote_path=dst, use_glob=False)
+        except IOError:
+            print "WARN: Cannot load template: %s" % tpl
