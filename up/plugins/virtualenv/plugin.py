@@ -1,7 +1,7 @@
 import up.plugin as base
-from up.conf import Settings
+import up.conf import conf
 
-settings = Settings()
+settings = conf.Settings()
 
 
 class Virtualenv(base.UpPlugin):

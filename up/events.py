@@ -1,3 +1,6 @@
+from up.logger import get_logger
+
+log = get_logger('up.events')
 
 
 class EventMixin(object):
@@ -14,11 +17,13 @@ class EventMixin(object):
     def on(self, eventName, callback, context=None):
         if eventName not in self._state['callbacks']:
             self._state['callbacks'][eventName] = []
-        self._state['callbacks'][eventName].append({
+        args = {
             'eventName': eventName,
             'callback': callback,
             'context': context,
-        })
+        }
+        log.warning('TEST')
+        self._state['callbacks'][eventName].append(args)
 
     def trigger(self, eventName, context=None):
         if eventName in self._state['callbacks']:

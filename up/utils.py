@@ -4,8 +4,6 @@ def import_module(name, package=None):
         return import_module(name, package)
     except ImportError:
         path = [m for m in name.split('.')]
-        print name
-        print path
         return __import__(name, {}, {}, path[-1])
 
 

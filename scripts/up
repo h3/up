@@ -3,7 +3,9 @@
 
 
 import sys, os #, shutil, subprocess
+import logging
 import argparse
+import coloredlogs
 import up
 
 from up.events import EventMixin
@@ -13,12 +15,12 @@ from yapsy.PluginManager import PluginManager
 
 __author__ = 'Maxime Haineault'
 
-import logging
-logging.basicConfig()
-#logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('yapsy')
+logger.disabled = True
+
 #logging.getLogger('yapsy').setLevel(logging.DEBUG)
 
-parser = argparse.ArgumentParser(prog='up', description='Deploy shit up the Internet')
+parser = argparse.ArgumentParser(prog='up', description='Deploy like a boss')
 parser.add_argument('-l', '--log-level', default=0, help='Log level', required=False)
 
 settings = Settings()
@@ -34,7 +36,6 @@ def pluginIterator(pm):
             yield plugin
 
 def run():
-
     # Initialize plugins
     pm = PluginManager()
     pm.setPluginPlaces([
@@ -66,6 +67,19 @@ def run():
                 obj.init()
 
     args = parser.parse_args()
+
+    log_level = getattr(logging, str(args.log_level).upper(), logging.INFO)
+    if not isinstance(log_level, int):
+        raise ValueError('Invalid log level: %s' % log_level)
+    else:
+       #logging.basicConfig(level=log_level)
+       #coloredlogs.install(level=log_level)
+        coloredlogs.install(level=0)
+        coloredlogs.install(level=1)
+        coloredlogs.install(level=2)
+        coloredlogs.install(level=3)
+        coloredlogs.install(level=4)
+        coloredlogs.install(level=5)
 
     # Init plugins and run command for all stages
     kwargs = dict(args._get_kwargs())

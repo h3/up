@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import logging
 
 from yapsy.IPlugin import IPlugin
 from fabric.api import env, sudo, run
 
-from up import log
+from up.logger import get_logger
 from up.utils import import_class
 from up.conf import Settings
 from up.events import EventMixin
@@ -13,6 +14,7 @@ from up.fabricwrapper import FabricMixin
 from up.templates import template
 
 settings = Settings()
+log = get_logger('up.plugin')
 
 
 class UpPlugin(IPlugin, EventMixin, FabricMixin):
@@ -35,4 +37,4 @@ class UpPlugin(IPlugin, EventMixin, FabricMixin):
                 tpl = template(fd.read(), context, stringio=True)
                 return self.put(local_path=tpl, remote_path=dst, use_glob=False)
         except IOError:
-            print "WARN: Cannot load template: %s" % tpl
+            log.warning("Cannot load template: %s" % tpl)

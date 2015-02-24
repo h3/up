@@ -1,7 +1,9 @@
 from fabric.api import env,  get, local, open_shell, prompt, put, sudo, run
 from up.conf import Settings
+from up.logger import get_logger
 
 settings = Settings()
+log = get_logger('up.fabric')
 env.use_ssh_config = True
 
 cmds = {
@@ -22,7 +24,7 @@ class FabricMixin(object):
 
         if 'servers' in ctx:
             for host in ctx.get('servers'):
-                print "[%s] %s: %s (%s)" % (host, cmd, args, kwargs)
+                log.info("[%s] %s: %s (%s)" % (host, cmd, args, kwargs))
                 env.host_string = host
                #rs.append(cmds.get(cmd)(*args, **kwargs))
         return rs

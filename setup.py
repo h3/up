@@ -9,6 +9,7 @@ install_requires = [
     'PyYAML',
     'Yapsy',
     'Jinja2',
+    'coloredlogs',
 ]
 
 setup(name='up',
