@@ -58,6 +58,7 @@ class Settings(object):
         # Load plugins default context
         for plugin in self.plugins:
             dcontext[plugin] = self._context.get('plugins').get(plugin, {})
+            print "LOADED PLUGIN CONTEXT: %s : %s" % (plugin, dcontext[plugin])
             if stage.get('extends') and stage.get('extends').get(plugin):
                 dcontext[plugin].update(stage.get('extends').get(plugin))
                 del stage['extends'][plugin]
@@ -71,8 +72,12 @@ class Settings(object):
             del stage['extends']
         # Stage context overrides base and default context
         dcontext.update(stage)
+        print "ZZZ %s" % dcontext
         # Push everything back into main context and we're done
         self._context.update(self.interpolate(dcontext, context=self._context))
+        print "+===============================================+++++"
+        print "xxx %s" % self._context
+        print "+===============================================+++++"
         return self._context
 
     def interpolate_string(self, s, context=None):
@@ -87,13 +92,14 @@ class Settings(object):
         out = obj
         if not context:
             context = self.get_context()
+
         if isinstance(obj, dict):
             for k,v in obj.iteritems():
-                out[k] = self.interpolate(v, context)
+                out[k] = self.interpolate(v, context=context)
         elif isinstance(obj, list):
-            out = [self.interpolate(v, context) for v in obj]
+            out = [self.interpolate(v, context=context) for v in obj]
         elif isinstance(obj, str):
-            out = self.interpolate_string(obj, context)
+            out = self.interpolate_string(obj, context=context)
         return out
 
     def set_stage(self, stage):

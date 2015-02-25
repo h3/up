@@ -10,6 +10,8 @@ class Nginx(base.UpPlugin):
     name = 'nginx'
     description = 'Setup nginx on remote stage(s)'
     default_conf = {
+        'listen': '0.0.0.0',
+        'client-max-body-size': '10M',
         'server-name': '{{ current.stage }}.{{ project.domain }}',
         'up-templates': [
             ['{{ current.stage }}.{{ project.domain }}', '/etc/nginx/sites-enabled'],

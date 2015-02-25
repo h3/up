@@ -15,6 +15,10 @@ class EventMixin(object):
         self.__dict__ = self._state
 
     def on(self, eventName, callback, context=None):
+        """
+        Binds an event to a callback, also accept a context
+        which will be updated by the trigger's context
+        """
         if eventName not in self._state['callbacks']:
             self._state['callbacks'][eventName] = []
         args = {
@@ -22,10 +26,14 @@ class EventMixin(object):
             'callback': callback,
             'context': context,
         }
-        log.warning('TEST')
         self._state['callbacks'][eventName].append(args)
+        log.info(u'%s (context: %s)' % (eventName, context))
 
     def trigger(self, eventName, context=None):
+        """
+        Loops throught all callbacks binded to a given eventName
+        and call them with a given context.
+        """
         if eventName in self._state['callbacks']:
             for callback in self._state['callbacks'][eventName]:
                 ctx = {}

@@ -15,18 +15,17 @@ from yapsy.PluginManager import PluginManager
 
 __author__ = 'Maxime Haineault'
 
-logger = logging.getLogger('yapsy')
-logger.disabled = True
-
 #logging.getLogger('yapsy').setLevel(logging.DEBUG)
 
 parser = argparse.ArgumentParser(prog='up', description='Deploy like a boss')
 parser.add_argument('-l', '--log-level', default=0, help='Log level', required=False)
+parser.add_argument('-L', '--log-self', default=False, help='Disable third party logging', required=False)
 
 settings = Settings()
 
 LOADED_PLUGINS = {}
 CORE_PLUGINS = ['deploy']
+
 
 def pluginIterator(pm):
     for plugin in pm.getAllPlugins():
@@ -34,6 +33,7 @@ def pluginIterator(pm):
             or plugin.name in settings.plugins \
             or plugin.name in CORE_PLUGINS:
             yield plugin
+
 
 def run():
     # Initialize plugins
@@ -59,6 +59,7 @@ def run():
             obj.argparse(subparsers)
         LOADED_PLUGINS[plugin.name] = {'plugin': plugin, 'object': obj}
 
+    # Init loaded plugins
     plugins = CORE_PLUGINS + settings.plugins
     for plugin in plugins:
         if plugin in LOADED_PLUGINS:
@@ -68,18 +69,18 @@ def run():
 
     args = parser.parse_args()
 
+    # Setup logging
     log_level = getattr(logging, str(args.log_level).upper(), logging.INFO)
     if not isinstance(log_level, int):
         raise ValueError('Invalid log level: %s' % log_level)
     else:
-       #logging.basicConfig(level=log_level)
-       #coloredlogs.install(level=log_level)
-        coloredlogs.install(level=0)
-        coloredlogs.install(level=1)
-        coloredlogs.install(level=2)
-        coloredlogs.install(level=3)
-        coloredlogs.install(level=4)
-        coloredlogs.install(level=5)
+        logging.getLogger('paramiko').setLevel(log_level)
+        logging.getLogger('yapsy').setLevel(log_level)
+
+    # Disable third party logging
+    if args.log_self:
+        logging.getLogger('paramiko').disabled = True
+        logging.getLogger('yapsy').disabled = True
 
     # Init plugins and run command for all stages
     kwargs = dict(args._get_kwargs())
@@ -92,8 +93,5 @@ def run():
     return 0
 
 
-def main():
-    sys.exit(run())
-
 if __name__=='__main__':
-    main()
+    sys.exit(run())

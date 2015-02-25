@@ -24,9 +24,12 @@ class FabricMixin(object):
 
         if 'servers' in ctx:
             for host in ctx.get('servers'):
-                log.info("[%s] %s: %s (%s)" % (host, cmd, args, kwargs))
                 env.host_string = host
-               #rs.append(cmds.get(cmd)(*args, **kwargs))
+                rs.append(cmds.get(cmd)(*args, **kwargs))
+                if 'local_path' in kwargs:
+                    print '%s' % kwargs.get('local_path').getvalue()
+                log.info("[%s] %s: %s (%s)" % (host, cmd, args, kwargs))
+
         return rs
 
     def get(self, *args, **kwargs):

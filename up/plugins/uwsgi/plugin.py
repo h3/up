@@ -10,9 +10,10 @@ class Uwsgi(base.UpPlugin):
     name = 'uwsgi'
     description = 'Setup uwsgi on remote stage(s)'
     default_conf = {
+        'pass': '/tmp/{{ current.stage }}.{{ project.domain }}.sock',
         'processes': 2,
         'up-templates': [
-            ['{{ current.stage }}.{{ project.domain }}.ini', '/etc/uwsgi/app-enabled'],
+            ['{{ current.stage }}.ini', '/etc/uwsgi/app-enabled'],
         ]
     }
 

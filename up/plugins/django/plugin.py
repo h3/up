@@ -11,9 +11,12 @@ class Django(base.UpPlugin):
     description = 'Setup Django on remote stage(s)'
     default_conf = {
         'settings': 'local_settings.py',
+        'static-copy': True,
+        'static-root': '{{ document_root }}/media/',
+        'media-root': '{{ document_root }}/static/',
         'up-templates': [
             ['{{ current.stage }}_settings.py',
-             '/var/www/vhosts/{{ current.stage }}.{{ project.domain }}/local_settings.py'],
+             '{{ document_root }}/{{ project.package }}/{{ project.name }}'],
         ]
     }
 
